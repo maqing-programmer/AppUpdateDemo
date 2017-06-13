@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/colorTransparentBg"
+              android:gravity="center"
+              android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="10dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_layout_download_popwindow_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="正在下载"
+            />
+
+        <ProgressBar
+            android:id="@+id/pb_layout_layout_download_popwindow_title"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:minHeight="20dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/tv_layout_layout_download_popwindow_cancel"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="取消"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:gravity="center"
+                />
+
+
+            <TextView
+                android:id="@+id/tv_layout_layout_download_popwindow_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确认"
+                android:textColor="@color/colorAccent"
+                android:textSize="16sp"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
