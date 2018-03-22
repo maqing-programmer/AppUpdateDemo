@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -46,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
     private PopupWindow mProgressPopwindow;
     private ProgressBar mProgressBar;
 
+    private static final int INSTALL_PACKAGES_REQUESTCODE = 1001;
+    private static final int REQUEST_CODE_WRITE_STORAGE = 1002;
+    private static final int REQUEST_CODE_UNKNOWN_APP = 2001;
+
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initEvent() {
+
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
                         //提示用户如果想要正常使用，要手动去设置中授权。
                         ToastUtil.showShort("请到设置-应用管理中开启此应用的读写权限");
                     } else {
-                        ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                        ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE
+                        }, REQUEST_CODE_WRITE_STORAGE);
                     }
                 } else {
-                    AppUpdateService.start(mContext,mSavePath,mDownloadUrl);
+                    checkIsAndroidO();
                 }
             }
         });
@@ -84,13 +93,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
+        if (requestCode == REQUEST_CODE_WRITE_STORAGE) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 ToastUtil.showShort("请到设置-应用管理中打开应用的读写权限");
                 return;
             }
+            checkIsAndroidO();
         }
-        AppUpdateService.start(mContext,mSavePath,mDownloadUrl);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_UNKNOWN_APP) {
+            checkIsAndroidO();
+        }
+    }
+
+    private void checkIsAndroidO() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            boolean b = getPackageManager().canRequestPackageInstalls();
+            if (b) {
+                AppUpdateService.start(mContext, mSavePath, mDownloadUrl);//安装应用的逻辑(写自己的就可以)
+            } else {
+                Log.e(TAG, "checkIsAndroidO: "+"requestPermissions:REQUEST_INSTALL_PACKAGES" );
+                //请求安装未知应用来源的权限
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
+
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+                startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
+
+            }
+        } else {
+            AppUpdateService.start(mContext, mSavePath, mDownloadUrl);
+        }
     }
 
 }
