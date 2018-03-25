@@ -1,4 +1,4 @@
 # AppUpdateDemo
-应用更新(适配Android N)
+Android 实现应用更新适配 Android O (Android 8.0)
 
-相应博客：http://blog.csdn.net/mq2856992713/article/details/72858249
+相应博客：[Android 实现应用更新适配 Android O (Android 8.0)](https://blog.csdn.net/mq2856992713/article/details/79688587)
