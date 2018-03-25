@@ -75,16 +75,16 @@ public class MainActivity extends AppCompatActivity {
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.READ_EXTERNAL_STORAGE)) {//用户已拒绝过一次
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {//用户已拒绝过一次
                         //提示用户如果想要正常使用，要手动去设置中授权。
                         ToastUtil.showShort("请到设置-应用管理中开启此应用的读写权限");
                     } else {
-                        ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE
+                        ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
                         }, REQUEST_CODE_WRITE_STORAGE);
                     }
                 } else {
-                    checkIsAndroidO();
+                    downloadAPK();
                 }
             }
         });
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 ToastUtil.showShort("请到设置-应用管理中打开应用的读写权限");
                 return;
             }
-            checkIsAndroidO();
+            downloadAPK();
         }
     }
 
@@ -106,23 +106,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_UNKNOWN_APP) {
-            checkIsAndroidO();
+            Log.e(TAG,resultCode+"");
+            downloadAPK();
         }
     }
 
-    private void checkIsAndroidO() {
+    private void downloadAPK() {
         if (Build.VERSION.SDK_INT >= 26) {
             boolean b = getPackageManager().canRequestPackageInstalls();
             if (b) {
                 AppUpdateService.start(mContext, mSavePath, mDownloadUrl);//安装应用的逻辑(写自己的就可以)
             } else {
-                Log.e(TAG, "checkIsAndroidO: "+"requestPermissions:REQUEST_INSTALL_PACKAGES" );
-                //请求安装未知应用来源的权限
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUESTCODE);
-
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
                 startActivityForResult(intent, REQUEST_CODE_UNKNOWN_APP);
-
             }
         } else {
             AppUpdateService.start(mContext, mSavePath, mDownloadUrl);

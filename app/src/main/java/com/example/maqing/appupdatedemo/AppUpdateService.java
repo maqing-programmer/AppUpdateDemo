@@ -13,18 +13,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
-
 import cn.finalteam.okhttpfinal.FileDownloadCallback;
 import cn.finalteam.okhttpfinal.HttpRequest;
-
 /**
  * Created by maqing on 2017/6/2.
  * Email:2856992713@qq.com
@@ -106,14 +101,15 @@ public class AppUpdateService extends Service {
 
     private NotificationManager mNotificationManager;
     private NotificationChannel mNotificationChannel;
+
     private void notifyUser(int progress) {
 
         if (Build.VERSION.SDK_INT >= 26) {
 
-            if (mNotificationChannel==null){
+            if (mNotificationChannel == null) {
                 //创建 通知通道  channelid和channelname是必须的（自己命名就好）
                 mNotificationChannel = new NotificationChannel("1",
-                        "Channel1", NotificationManager.IMPORTANCE_DEFAULT);
+                        "Channel1", NotificationManager.IMPORTANCE_NONE);
                 mNotificationChannel.enableLights(true);//是否在桌面icon右上角展示小红点
                 mNotificationChannel.setLightColor(Color.GREEN);//小红点颜色
                 mNotificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
@@ -122,10 +118,10 @@ public class AppUpdateService extends Service {
 
             int notificationId = 0x1234;
             Notification.Builder builder = new Notification.Builder(getApplicationContext(), "1");
+            builder.setOnlyAlertOnce(true);
             builder.setSmallIcon(R.mipmap.ic_launcher)
                     .setContentText("正在下载新版本，请稍后...")
                     .setAutoCancel(true);
-
             if (progress > 0 && progress <= 100) {
                 builder.setProgress(100, progress, false);
             } else {
@@ -135,12 +131,11 @@ public class AppUpdateService extends Service {
             builder.setContentIntent(progress >= 100 ? this.getContentIntent() :
                     PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT));
 
-
             Notification notification = builder.build();
             mNotificationManager.notify(notificationId, notification);
 
         } else {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this,null);
             builder.setSmallIcon(R.mipmap.ic_launcher)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                     .setContentTitle(getString(R.string.app_name));
@@ -156,8 +151,6 @@ public class AppUpdateService extends Service {
             mNotification = builder.build();
             mNotificationManager.notify(0, mNotification);
         }
-
-
     }
 
     /**
