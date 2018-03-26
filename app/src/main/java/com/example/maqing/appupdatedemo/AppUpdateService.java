@@ -109,7 +109,7 @@ public class AppUpdateService extends Service {
             if (mNotificationChannel == null) {
                 //创建 通知通道  channelid和channelname是必须的（自己命名就好）
                 mNotificationChannel = new NotificationChannel("1",
-                        "Channel1", NotificationManager.IMPORTANCE_NONE);
+                        "Channel1",NotificationManager.IMPORTANCE_HIGH);
                 mNotificationChannel.enableLights(true);//是否在桌面icon右上角展示小红点
                 mNotificationChannel.setLightColor(Color.GREEN);//小红点颜色
                 mNotificationChannel.setShowBadge(true); //是否在久按桌面图标时显示此渠道的通知
